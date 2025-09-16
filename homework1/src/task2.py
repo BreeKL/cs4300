@@ -1,38 +1,62 @@
+# Task2 defines functions to work with specific data types
 
-# integers
-def integer_math(x,y):
-    return x+y, x-y, x*y, x/y
 
-# floating-point numbers
-def float_math(x,y):
-    if y == 0: 
-        div = None
-    else: div = x/y
+# ******** integers **************
+def int_add(x, y):
+    return x + y
 
-    return x+y, x-y, x*y, div
+def int_subtract(x, y):
+    return x - y
 
-# strings
-# Performs basic "string math": addition (concatenation), subtraction (removing occurrences of y from x),
-# and multiplication (repeating x y times if y is a positive integer; otherwise None)
-def string_math(x,y):
-    # Ensure x is string for string multiplication
+def int_multiply(x, y):
+    return x * y
+
+def int_divide(x, y):
+    if y == 0:
+        return None
+    return int(x / y)
+
+# ********** floating-point numbers *****************
+def float_add(x, y):
+    return x + y
+
+def float_subtract(x, y):
+    return x - y
+
+def float_multiply(x, y):
+    return x * y
+
+def float_divide(x, y):
+    if y == 0:
+        return None
+    return x / y
+
+# ********** Strings ****************
+# String addition (concatenation)
+def string_add(x, y):
     if isinstance(x, int):
         x = str(x)
+    if isinstance(y, int):
+        y = str(y)
+    return x + y
 
-    # Multiply only if y is a positive int
+# String subtraction (remove occurrences of y from x)
+def string_subtract(x, y):
+    if isinstance(x, int):
+        x = str(x)
+    if isinstance(y, int):
+        y = str(y)
+    return x.replace(y, '')
+
+# String multiplication (repeat x y times if y is positive integer)
+def string_multiply(x, y):
+    if isinstance(x, int):
+        x = str(x)
     if isinstance(y, int) and y > 0:
-        mult = x * y
-        y = str(y)
-    else:
-        y = str(y)
-        mult = None
+        return x * y
+    return None
 
-    add = x+y
-    sub = x.replace(y, '')
-
-    return add, sub, mult
-
-# booleans
+# ************ booleans *******************
 def AND(x, y):
     return x and y
 
