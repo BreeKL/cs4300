@@ -1,7 +1,15 @@
 from task3 import *
 import pytest
 
-@pytest.mark.parametrize("num, expected_result", [(10, "positive"), (-2, "negative"), (0, "zero"), ("Hi", "Not a Number"), (0.11, "positive")] )
+@pytest.mark.parametrize("num, expected_result", 
+    [
+        (10, "positive"), 
+        (-2, "negative"), 
+        (0, "zero"), 
+        ("Hi", "Not a Number"), 
+        (0.11, "positive")
+    ] 
+)
 def test_check_sign(num, expected_result):
     assert check_sign(num) == expected_result
 
