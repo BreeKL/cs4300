@@ -2,6 +2,8 @@ import math
 
 # Use if statements
 def check_sign(num):
+    if not isinstance(num, (int, float)):
+        return "Not a Number"
     if num > 0:
         return "positive"
     elif num < 0:
