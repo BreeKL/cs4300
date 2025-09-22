@@ -10,9 +10,17 @@ a Python script and corresponding pytest test cases.
 
 -----------------------------------------------
 
+## Environment Requirements
+- Python: 3.12.3
+- Pip: latest
+- Virtual environment: recommended
+
+------------------------------------------------
+
 ## Python Virtual Environment Setup
 
 It is recommended to use a virtual environment to isolate project dependencies.
+This project uses **Python 3.12.3**.
 
 # Create a virtual environment
     python -m venv hw1_venv
