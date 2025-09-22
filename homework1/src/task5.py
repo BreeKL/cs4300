@@ -70,8 +70,9 @@ def find_first_three_books():
 def get_student_name(student_id):
     """Return the student name for a given ID."""
     return student_database.get(student_id, {}).get("name")
+  
 
-def main():
+if __name__ == "__main__":
     # Print books
     for line in find_first_three_books():
         print(line)
@@ -80,7 +81,3 @@ def main():
     print("All students: ") 
     for line in [student["name"] for student in student_database.values()]:
         print(line)
-  
-
-if __name__ == "__main__":
-    main()

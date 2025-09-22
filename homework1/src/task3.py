@@ -62,14 +62,19 @@ def sum_100():
     """
     Calculate the sum of integers from 1 to 100.
 
-    Uses the arithmetic series formula (n * (n + 1)) / 2.
+    Uses a while loop to iterate though all the integers
 
     Returns
     -------
     float
         The sum of integers from 1 through 100.
     """
-    total = (100 + 1) * (100 / 2)
+    next = 100
+    total = 0
+    while next >= 1:
+        total += next
+        next -= 1
+        
     return total
 
 # Logic for this function based on code from https://pynative.com/python-check-prime-number/
@@ -108,7 +113,7 @@ def is_prime(n):
     return True
 
 def main():
-    print(ten_primes())
+    print("The first ten primes are: ", ten_primes())
 
 if __name__ == "__main__":
     main()

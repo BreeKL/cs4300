@@ -56,6 +56,3 @@ def get_status_code(url: str) -> int:
     """
     response = requests.get(url)
     return response.status_code
-
-
-print(url_exists("https://www.google.com"))
