@@ -8,7 +8,6 @@ Features:
 """
 
 import string
-import os
 from pathlib import Path
 
 def count_words(content):
@@ -37,9 +36,8 @@ def count_words(content):
     if not isinstance(content, (str, Path)):
         raise ValueError("Input must be a string or Path object")
 
-    path = Path(content)
-
     # Check path existence, and copies text from path or string
+    path = Path(content)
     if path.is_file():
         text = path.read_text(encoding="utf-8")
     else:
