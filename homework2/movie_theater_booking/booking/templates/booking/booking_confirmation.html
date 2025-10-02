@@ -1,0 +1,66 @@
+{% extends 'booking/base.html' %}
+
+{% block title %}Booking Confirmed - Movie Theater Booking{% endblock %}
+
+{% block extra_css %}
+<style>
+    .success-icon {
+        font-size: 5rem;
+        animation: scaleIn 0.5s ease-out;
+    }
+    
+    @keyframes scaleIn {
+        from {
+            transform: scale(0);
+        }
+        to {
+            transform: scale(1);
+        }
+    }
+    
+    .confirmation-card {
+        max-width: 600px;
+        margin: 3rem auto;
+    }
+    
+    .movie-info {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="confirmation-card">
+    <div class="text-center mb-4">
+        <div class="success-icon">✅</div>
+    </div>
+    
+    <div class="card shadow-lg border-0">
+        <div class="card-body text-center p-5">
+            <h1 class="text-success mb-3">Booking Confirmed!</h1>
+            <p class="lead text-muted mb-4">Your seat reservation has been successfully confirmed.</p>
+            
+            <div class="movie-info mb-4">
+                <h2 class="h3 mb-2">{{ movie.title }}</h2>
+                <p class="mb-0">{{ movie.release_date|date:"F d, Y" }} • {{ movie.duration }} minutes</p>
+            </div>
+            
+            <div class="alert alert-info" role="alert">
+                <strong>📋 Next Steps:</strong> Check the <strong>All Bookings</strong> page to view your reservation details.
+            </div>
+            
+            <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-4">
+                <a href="{% url 'movie_list' %}" class="btn btn-primary btn-lg px-4">
+                    Browse More Movies
+                </a>
+                <a href="{% url 'all_bookings' %}" class="btn btn-outline-secondary btn-lg px-4">
+                    View All Bookings
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

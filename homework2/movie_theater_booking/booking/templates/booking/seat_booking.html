@@ -1,0 +1,282 @@
+{% extends 'booking/base.html' %}
+
+{% block title %}Book Seats - {{ movie.title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .movie-banner {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 10px;
+        text-align: center;
+    }
+    
+    .theater-screen {
+        background: #333;
+        color: white;
+        text-align: center;
+        padding: 1rem;
+        border-radius: 10px 10px 0 0;
+        font-size: 1.2rem;
+        letter-spacing: 2px;
+        margin-bottom: 2rem;
+    }
+    
+    .seat-map {
+        background: #f8f9fa;
+        padding: 2rem;
+        border-radius: 10px;
+    }
+    
+    .seat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+        gap: 10px;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    .seat {
+        aspect-ratio: 1;
+        border: 2px solid #667eea;
+        border-radius: 8px;
+        background: white;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        transition: all 0.3s;
+        font-size: 0.9rem;
+    }
+    
+    .seat:hover:not(.booked) {
+        transform: scale(1.1);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    .seat.available {
+        background: #28a745;
+        color: white;
+        border-color: #28a745;
+    }
+    
+    .seat.selected {
+        background: #667eea;
+        color: white;
+        border-color: #667eea;
+        transform: scale(1.1);
+    }
+    
+    .seat.booked {
+        background: #dc3545;
+        color: white;
+        border-color: #dc3545;
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+    
+    .legend-box {
+        width: 30px;
+        height: 30px;
+        border-radius: 5px;
+        border: 2px solid;
+        display: inline-block;
+        margin-right: 0.5rem;
+    }
+    
+    .legend-box.available {
+        background: #28a745;
+        border-color: #28a745;
+    }
+    
+    .legend-box.selected {
+        background: #667eea;
+        border-color: #667eea;
+    }
+    
+    .legend-box.booked {
+        background: #dc3545;
+        border-color: #dc3545;
+    }
+    
+    .selected-seat-tag {
+        background: #667eea;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 0.25rem;
+    }
+    
+    .remove-seat {
+        cursor: pointer;
+        background: rgba(255,255,255,0.3);
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+    }
+    
+    .remove-seat:hover {
+        background: rgba(255,255,255,0.5);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'movie_list' %}">Movies</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'movie_detail' movie.id %}">{{ movie.title }}</a></li>
+        <li class="breadcrumb-item active">Book Seats</li>
+    </ol>
+</nav>
+
+<div class="movie-banner mb-4">
+    <h1 class="h2 mb-2">{{ movie.title }}</h1>
+    <p class="mb-0">{{ movie.release_date|date:"F d, Y" }} • {{ movie.duration }} minutes</p>
+</div>
+
+<div class="theater-screen">
+    🎬 SCREEN 🎬
+</div>
+
+<div class="seat-map mb-4">
+    <div class="seat-grid mb-4">
+        {% for seat in all_seats %}
+            <div class="seat {% if seat.id in booked_seat_ids %}booked{% else %}available{% endif %}" 
+                 data-seat-id="{{ seat.id }}"
+                 data-seat-number="{{ seat.seat_number }}">
+                {{ seat.seat_number }}
+            </div>
+        {% endfor %}
+    </div>
+    
+    <div class="d-flex justify-content-center gap-4 flex-wrap">
+        <div class="d-flex align-items-center">
+            <span class="legend-box available"></span>
+            <span>Available</span>
+        </div>
+        <div class="d-flex align-items-center">
+            <span class="legend-box selected"></span>
+            <span>Selected</span>
+        </div>
+        <div class="d-flex align-items-center">
+            <span class="legend-box booked"></span>
+            <span>Booked</span>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h2 class="h5 mb-0">Booking Summary</h2>
+    </div>
+    <div class="card-body">
+        <form method="post" id="booking-form">
+            {% csrf_token %}
+            
+            <div class="mb-4">
+                <label for="guest-name" class="form-label fw-bold">Your Name:</label>
+                <input type="text" class="form-control form-control-lg" id="guest-name" 
+                       name="guest_name" placeholder="Enter your name" required>
+            </div>
+            
+            <div class="mb-4">
+                <label class="form-label fw-bold">Selected Seats:</label>
+                <div id="selected-seats-display" class="border rounded p-3 bg-light">
+                    <span class="text-muted fst-italic">No seats selected</span>
+                </div>
+            </div>
+            
+            <input type="hidden" name="seat_ids" id="seat-ids-input">
+            
+            <div class="d-grid gap-2 d-md-flex">
+                <button type="submit" class="btn btn-primary btn-lg flex-grow-1" id="confirm-booking-btn" disabled>
+                    Confirm Booking
+                </button>
+                <a href="{% url 'movie_list' %}" class="btn btn-outline-secondary btn-lg">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const selectedSeats = new Set();
+    const bookingForm = document.getElementById('booking-form');
+    const seatIdsInput = document.getElementById('seat-ids-input');
+    const selectedSeatsDisplay = document.getElementById('selected-seats-display');
+    const confirmBtn = document.getElementById('confirm-booking-btn');
+    
+    function updateDisplay() {
+        if (selectedSeats.size === 0) {
+            selectedSeatsDisplay.innerHTML = '<span class="text-muted fst-italic">No seats selected</span>';
+            confirmBtn.disabled = true;
+        } else {
+            selectedSeatsDisplay.innerHTML = '';
+            selectedSeats.forEach(seatData => {
+                const tag = document.createElement('span');
+                tag.className = 'selected-seat-tag';
+                tag.innerHTML = `
+                    <span>Seat ${seatData.number}</span>
+                    <span class="remove-seat" data-seat-id="${seatData.id}">×</span>
+                `;
+                selectedSeatsDisplay.appendChild(tag);
+            });
+            confirmBtn.disabled = false;
+        }
+        
+        seatIdsInput.value = Array.from(selectedSeats).map(s => s.id).join(',');
+    }
+    
+    document.querySelectorAll('.seat.available').forEach(seat => {
+        seat.addEventListener('click', function() {
+            const seatId = this.dataset.seatId;
+            const seatNumber = this.dataset.seatNumber;
+            
+            if (this.classList.contains('selected')) {
+                this.classList.remove('selected');
+                selectedSeats.forEach(s => {
+                    if (s.id === seatId) selectedSeats.delete(s);
+                });
+            } else {
+                this.classList.add('selected');
+                selectedSeats.add({ id: seatId, number: seatNumber });
+            }
+            
+            updateDisplay();
+        });
+    });
+    
+    selectedSeatsDisplay.addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-seat')) {
+            const seatId = e.target.dataset.seatId;
+            const seatElement = document.querySelector(`.seat[data-seat-id="${seatId}"]`);
+            
+            if (seatElement) {
+                seatElement.classList.remove('selected');
+                selectedSeats.forEach(s => {
+                    if (s.id === seatId) selectedSeats.delete(s);
+                });
+                updateDisplay();
+            }
+        }
+    });
+    
+    bookingForm.addEventListener('submit', function(e) {
+        if (selectedSeats.size === 0) {
+            e.preventDefault();
+            alert('Please select at least one seat');
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,116 @@
+{% extends 'booking/base.html' %}
+
+{% block title %}{{ movie.title }} - Movie Theater Booking{% endblock %}
+
+{% block extra_css %}
+<style>
+    .movie-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 3rem;
+        border-radius: 10px;
+        text-align: center;
+    }
+    
+    .movie-hero h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1.5rem;
+        font-weight: bold;
+    }
+    
+    .meta-card {
+        background: rgba(255,255,255,0.2);
+        padding: 1rem;
+        border-radius: 8px;
+        text-align: center;
+    }
+    
+    .meta-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+        margin-bottom: 0.5rem;
+    }
+    
+    .meta-value {
+        font-size: 1.3rem;
+        font-weight: bold;
+    }
+    
+    .section-card {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 2rem;
+    }
+    
+    .seat-badge {
+        display: inline-block;
+        background: #28a745;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        font-weight: bold;
+        margin: 0.25rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'movie_list' %}">Movies</a></li>
+        <li class="breadcrumb-item active">{{ movie.title }}</li>
+    </ol>
+</nav>
+
+<div class="movie-hero mb-4">
+    <h1>{{ movie.title }}</h1>
+    <div class="row g-3 justify-content-center">
+        <div class="col-md-3">
+            <div class="meta-card">
+                <div class="meta-label">Release Date</div>
+                <div class="meta-value">{{ movie.release_date|date:"M d, Y" }}</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="meta-card">
+                <div class="meta-label">Duration</div>
+                <div class="meta-value">{{ movie.duration }} min</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="meta-card">
+                <div class="meta-label">Available Seats</div>
+                <div class="meta-value">{{ available_seats|length }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="section-card mb-4">
+    <h2 class="h4 mb-3">Description</h2>
+    <p class="lead">{{ movie.description }}</p>
+</div>
+
+<div class="section-card mb-4">
+    <h2 class="h4 mb-3">Seat Availability</h2>
+    {% if available_seats %}
+        <p class="mb-3">Available seats for this movie:</p>
+        <div>
+            {% for seat in available_seats %}
+                <span class="seat-badge">{{ seat.seat_number }}</span>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-danger" role="alert">
+            <strong>All seats are currently booked for this movie.</strong>
+        </div>
+    {% endif %}
+</div>
+
+{% if available_seats %}
+    <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+        <a href="{% url 'seat_booking' movie.id %}" class="btn btn-primary btn-lg px-5">Book Seats Now</a>
+        <a href="{% url 'all_bookings' %}" class="btn btn-outline-secondary btn-lg px-4">View All Bookings</a>
+    </div>
+{% endif %}
+{% endblock %}

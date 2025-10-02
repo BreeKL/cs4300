@@ -1,0 +1,101 @@
+{% extends 'booking/base.html' %}
+
+{% block title %}Movies - Movie Theater Booking{% endblock %}
+
+{% block extra_css %}
+<style>
+    .movie-card {
+        transition: transform 0.3s, box-shadow 0.3s;
+        height: 100%;
+        border: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .movie-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    }
+    
+    .movie-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        min-height: 140px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+    
+    .movie-header h2 {
+        font-size: 1.5rem;
+        margin: 0;
+        font-weight: bold;
+    }
+    
+    .movie-description {
+        max-height: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: #555;
+    }
+    
+    .movie-info-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+        color: #666;
+    }
+    
+    .no-movies {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #999;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="display-5 fw-bold">Available Movies</h1>
+</div>
+
+{% if movies %}
+    <div class="row g-4">
+        {% for movie in movies %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card movie-card">
+                <div class="movie-header">
+                    <h2>{{ movie.title }}</h2>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="movie-info-item">
+                            <strong>📅 Release Date:</strong>
+                            <span>{{ movie.release_date|date:"F d, Y" }}</span>
+                        </div>
+                        <div class="movie-info-item">
+                            <strong>⏱️ Duration:</strong>
+                            <span>{{ movie.duration }} minutes</span>
+                        </div>
+                    </div>
+                    <div class="movie-description mb-3">
+                        <p>{{ movie.description }}</p>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'movie_detail' movie.id %}" class="btn btn-primary">View Details</a>
+                        <a href="{% url 'seat_booking' movie.id %}" class="btn btn-outline-secondary">Book Seats</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="no-movies">
+        <h2 class="display-6">🎬 No Movies Available</h2>
+        <p class="lead">Check back soon for new releases!</p>
+    </div>
+{% endif %}
+{% endblock %}

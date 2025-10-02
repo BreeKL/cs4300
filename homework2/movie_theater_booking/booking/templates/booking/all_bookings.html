@@ -1,0 +1,152 @@
+{% extends 'booking/base.html' %} 
+
+{% block title %}All Bookings - Movie Theater Booking{% endblock %} 
+{% block extra_css %} 
+<style> 
+    .stat-card { 
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+        color: white; 
+        padding: 2rem; 
+        border-radius: 10px; 
+        text-align: center; 
+    } 
+    
+    .stat-value { 
+        font-size: 3rem; 
+        font-weight: bold; 
+        margin-bottom: 0.5rem; 
+        } 
+        
+    .stat-label { 
+        opacity: 0.9; 
+        font-size: 1.1rem;   
+    } 
+    
+    .booking-card { 
+        transition: box-shadow 0.3s; 
+        border: none; 
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+    } 
+    
+    .booking-card:hover { 
+        box-shadow: 0 5px 15px rgba(0,0,0,0.15); 
+    } 
+    
+    .booking-header { 
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+        color: white; 
+        padding: 1.5rem; 
+    } 
+    
+    .booking-date { 
+        font-size: 0.9rem; 
+        opacity: 0.9; 
+    } 
+    
+    .seat-tag { 
+        background: #667eea; 
+        color: white; 
+        padding: 0.4rem 0.8rem; 
+        border-radius: 15px; 
+        font-weight: bold; 
+        display: inline-block; 
+    } 
+    
+    .no-bookings { 
+        text-align: center; 
+        padding: 4rem 2rem; 
+        background: #f8f9fa; 
+        border-radius: 10px; 
+    } 
+    
+</style> 
+{% endblock %}
+
+{% block content %}
+<h1 class="display-5 fw-bold mb-4">All Bookings</h1>
+
+{% if bookings %}
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <div class="stat-card">
+                <div class="stat-value">{{ bookings|length }}</div>
+                <div class="stat-label">Total Bookings</div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="stat-card">
+                <div class="stat-value">{{ upcoming_count }}</div>
+                <div class="stat-label">Upcoming Movies</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row g-4">
+        {% for booking in bookings %}
+        <div class="col-12">
+            <div class="card booking-card">
+                <div class="booking-header">
+                    <div class="d-flex justify-content-between align-items-start flex-wrap">
+                        <div>
+                            <h2 class="h4 mb-1">{{ booking.movie.title }}</h2>
+                            <div class="booking-date">
+                                Booked on {{ booking.booking_date|date:"F d, Y" }} at {{ booking.booking_date|time:"g:i A" }}
+                            </div>
+                        </div>
+                        <div>
+                            {% if booking.movie.release_date >= today %}
+                                <span class="badge bg-success">Upcoming</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Past</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-2">
+                                <strong>👤 Booked by:</strong>
+                                <span class="ms-2">{{ booking.user.first_name|default:booking.user.username }}</span>
+                            </div>
+                            <div class="mb-2">
+                                <strong>📅 Movie Date:</strong>
+                                <span class="ms-2">{{ booking.movie.release_date|date:"F d, Y" }}</span>
+                            </div>
+                            <div class="mb-2">
+                                <strong>⏱️ Duration:</strong>
+                                <span class="ms-2">{{ booking.movie.duration }} minutes</span>
+                            </div>
+                            <div class="mb-2">
+                                <strong>🎫 Seat:</strong>
+                                <span class="seat-tag ms-2">{{ booking.seat.seat_number }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="d-grid gap-2">
+                                <a href="{% url 'movie_detail' booking.movie.id %}" class="btn btn-outline-primary">
+                                    View Movie
+                                </a>
+                                <form method="post" action="{% url 'cancel_booking' booking.id %}" 
+                                      onsubmit="return confirm('Are you sure you want to cancel this booking?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger w-100">Cancel Booking</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="no-bookings">
+        <h2 class="display-6">📽️ No Bookings Yet</h2>
+        <p class="lead text-muted">No movie bookings have been made yet.</p>
+        <a href="{% url 'movie_list' %}" class="btn btn-primary btn-lg mt-3">Browse Movies</a>
+    </div>
+{% endif %}
+{% endblock %}
