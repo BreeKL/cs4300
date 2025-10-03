@@ -125,4 +125,4 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-FORCE_SCRIPT_NAME = '/proxy/3000'
+#FORCE_SCRIPT_NAME = '/proxy/3000'
