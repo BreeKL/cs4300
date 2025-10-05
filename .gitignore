@@ -3,3 +3,4 @@ homework2/hw2_venv
 **/.pytest_cache
 **/__pycache__
 homework2/movie_theater_booking/db.sqlite3
+homework2/movie_theater_booking/staticfiles/
