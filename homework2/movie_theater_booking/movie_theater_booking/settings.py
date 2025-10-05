@@ -14,22 +14,28 @@ from pathlib import Path
 import dj_database_url
 import os
 
+if os.getenv('RENDER'):
+    ENVIRONMENT = "production"
+else: ENVIRONMENT = "development"
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
+# Secret key
+if ENVIRONMENT == "production":
+    try:
+        SECRET_KEY = os.environ["SECRET_KEY"]  # Must exist in env vars
+        if not SECRET_KEY:
+            raise ValueError("SECRET_KEY environment variable is empty")
+    except KeyError:
+        raise ValueError("SECRET_KEY environment variable is not set")
+else:
+    # Fallback for local development
+    SECRET_KEY = os.environ.get("SECRET_KEY", "local-dev-secret-key")
 
-# SECURITY WARNING: keep the secret key used in production secret!
-#SECRET_KEY = 'django-insecure-ga!o$y7)$3xgp)*jjdbg)+527*s759v10#x58r^)m1mu+%8yt2'
-SECRET_KEY = os.environ.get("SECRET_KEY")
-if not SECRET_KEY:
-    raise ValueError("SECRET_KEY environment variable is not set")
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+# Debug mode
+DEBUG = ENVIRONMENT != "production"
 
 ALLOWED_HOSTS = ["cs4300-5imc.onrender.com", "127.0.0.1", "localhost"]
 
@@ -81,28 +87,10 @@ WSGI_APPLICATION = 'movie_theater_booking.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
-'''DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-'''
-
-'''DATABASES = {
-    'default': dj_database_url.config(
-        # Replace this value with your local database's connection string.
-        default='postgresql://postgres:postgres@localhost:5432/mysite',
-        conn_max_age=600
-    )
-}
-'''
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-if os.getenv('RENDER'):  # Render will set this environment variable
+if ENVIRONMENT == "production": 
     DATABASES = {
         'default': dj_database_url.config(conn_max_age=600)
     }
@@ -154,7 +142,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # This production code might break development mode, so we check whether we're in DEBUG mode
-if not DEBUG:
+if ENVIRONMENT == "production":
     # Tell Django to copy static assets into a path called `staticfiles` (this is specific to Render)
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
