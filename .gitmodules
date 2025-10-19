@@ -1,0 +1,3 @@
+[submodule "my_buddy_crocker/Buddy_Crocker_CS4300"]
+	path = my_buddy_crocker/Buddy_Crocker_CS4300
+	url = https://github.com/mckennaded/Buddy_Crocker_CS4300.git
